@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ current_directory }}</title>
 </head>
 <style>
@@ -18,6 +19,12 @@
     form {
         margin-top: 0;
         margin-bottom: 0;
+    }
+    a !.filename {
+        color: blue;
+    }
+    a !.filename {
+        color: blue;
     }
 </style>
 <body>
@@ -113,7 +120,13 @@
                 fileInput.value = null; // Reset the file input value after submission
             }
         }
-    
+        // Get all the <a> elements with the class "downloadbtn"
+        var downloadLinks = document.querySelectorAll('a.downloadbtn');
+
+        // Loop through each <a> element and add the "target" attribute with the value "_blank"
+        downloadLinks.forEach(function(link) {
+        link.setAttribute('target', '_blank');
+        });
     </script>
 </body>
 </html>
