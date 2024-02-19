@@ -2,9 +2,12 @@ import os
 from flask import Flask, render_template, request, redirect, send_from_directory
 
 app = Flask(__name__)
-allowed_directory = r".\ftp"
+allowed_directory = r".\ftp" #use .\ for relitive directorys on windows and use ./ for relitive directorys in linux, for windows use backslashes(\) and linux use normal slashes (/)
 current_directory = allowed_directory
 
+if not os.path.exists(allowed_directory):
+    exit(f"Error: Directory \"{allowed_directory}\" does not exist")
+    
 def get_files_and_directories(directory):
     items = os.listdir(directory)
     files = []
