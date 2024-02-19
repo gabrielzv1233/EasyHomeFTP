@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ current_directory }}</title>
+</head>
+<style>
+    .filename {
+        text-decoration:none;
+        color:black;
+        outline: 1px solid black;
+    }
+    .filename:hover{
+        outline: 2px solid red;
+    }
+    .submit {
+        border-radius: 10px;
+    }
+    form {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+</style>
+<body>
+    <h2>Current Directory: {{ current_directory }}</h2>
+    <p>click a filename to autofill into "Delete" and "rename" fields</p>
+    {% if current_directory != allowed_directory %}
+        <form action="/change_directory" method="POST">
+            <input type="hidden" name="directory_name" value="..">
+            <input type="submit" value="Previous Directory">
+        </form>
+    {% endif %}
+    <form action="/rename" method="POST">
+        <input type="text" name="item_name" placeholder="Item Name" id="rename-item-name">
+        <input type="text" name="new_name" placeholder="New Name" id="rename-new-name">
+        <input class="submit" type="submit" value="Rename">
+    </form>
+    <form action="/create_directory" method="POST">
+        <input type="text" name="directory_name" placeholder="Directory Name">
+        <input class="submit" type="submit" value="Create Directory">
+    </form>
+    <form action="/delete" method="POST">
+        <input type="text" name="item_name" placeholder="Item Name" id="delete-item-name">
+        <input class="submit" type="submit" value="Delete">
+    </form>
+    <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form">
+        <input type="button" value="Upload File" onclick="document.getElementById('file-input').click();">
+        <input type="file" name="file" id="file-input" style="display: none;" onchange="handleFileSelect(event);">
+    </form>
+    <ul>
+        {% for directory in directories %}
+            <li><a href="#" onclick="handleClick('{{ directory }}')">{{ directory }}</a></li>
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for file in files %}
+            <li><a class="filename" href="#" onclick="handleClick('{{ file }}')">{{ file }}</a> <a class="downloadbtn" href="/download/{{ file }}">Download</a></li>
+        {% endfor %}
+    </ul>
+    <script>
+        var lastClickedItem = null;
+        var clickCount = 0;
+
+        function handleClick(itemName) {
+            if (lastClickedItem === itemName) {
+                clickCount++;
+            } else {
+                lastClickedItem = itemName;
+                clickCount = 1;
+            }
+
+            if (clickCount === 1) {
+                setTimeout(function() {
+                    if (clickCount === 1) {
+                        document.getElementById("rename-item-name").value = itemName;
+                        document.getElementById("rename-new-name").value = itemName;
+                        document.getElementById("delete-item-name").value = itemName;
+                    } else {
+                        changeDirectory(itemName);
+                    }
+                    clickCount = 0;
+                }, 500);
+            }
+        }
+
+        function changeDirectory(directoryName) {
+            var form = document.createElement("form");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", "/change_directory");
+
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "directory_name");
+            input.setAttribute("value", directoryName);
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function handleFileSelect(event) {
+            var fileInput = event.target;
+            var form = document.getElementById("upload-form");
+            var filename = fileInput.value.split('\\').pop();
+            var existingFiles = Array.from(document.querySelectorAll('.filename')).map(function(elem) {
+                return elem.textContent.trim();
+            });
+    
+            if (existingFiles.includes(filename)) {
+                alert("File '" + filename + "' already exists, please remove the existing file and try again.");
+                location.reload();
+            } else {
+                form.submit();
+                fileInput.value = null; // Reset the file input value after submission
+            }
+        }
+    
+    </script>
+</body>
+</html>
