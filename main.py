@@ -1,13 +1,16 @@
 import os
 from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
-
+try:
+    from pathvalidate import sanitize_filename, sanitize_filepath
+except ModuleNotFoundError:
+    os.system("pip install pathvalidate")
 app = Flask(__name__)
-allowed_directory = r".\ftp" #use .\ for relitive directorys on windows and use ./ for relitive directorys in linux, for windows use backslashes(\) and linux use normal slashes (/)
+allowed_directory = r".\ftp"
 current_directory = allowed_directory
 
 if not os.path.exists(allowed_directory):
     exit(f"Error: Directory \"{allowed_directory}\" does not exist")
-    
+
 def get_files_and_directories(directory):
     items = os.listdir(directory)
     files = []
@@ -23,7 +26,7 @@ def get_files_and_directories(directory):
 def file_explorer():
     # Replace the allowed_directory path with "HOME"
     censored_directory = current_directory.replace(allowed_directory, "HOME")
-    
+
     files, directories = get_files_and_directories(current_directory)
     return render_template('file_explorer.html', current_directory=censored_directory, files=files, directories=directories)
 
@@ -32,7 +35,8 @@ def upload_file():
     file = request.files['file']
     if file:
         filename = file.filename
-        file_path = os.path.join(current_directory, filename)
+        sanitized_filename = sanitize_filename(filename)
+        file_path = os.path.join(current_directory, sanitized_filename)
         if os.path.exists(file_path):
             print(f"File '{filename}' already exists, not uploading")
             return "File already exists on the server."
@@ -48,7 +52,12 @@ def upload_file():
 def create_directory():
     directory_name = request.form['directory_name']
     if directory_name:
-        os.makedirs(os.path.join(current_directory, directory_name))
+        sanitized_directory_name = sanitize_filename(directory_name)
+        try:
+            os.makedirs(os.path.join(current_directory, sanitized_directory_name))
+        except Exception as e:
+            print(f"Error creating directory: {str(e)}")
+            return "Error creating directory."
     return redirect('/')
 
 @app.route('/rename', methods=['POST'])
@@ -56,7 +65,12 @@ def rename_file_or_directory():
     item_name = request.form['item_name']
     new_name = request.form['new_name']
     if item_name and new_name:
-        os.rename(os.path.join(current_directory, item_name), os.path.join(current_directory, new_name))
+        sanitized_new_name = sanitize_filename(new_name)
+        try:
+            os.rename(os.path.join(current_directory, item_name), os.path.join(current_directory, sanitized_new_name))
+        except Exception as e:
+            print(f"Error renaming file or directory: {str(e)}")
+            return "Error renaming file or directory."
     return redirect('/')
 
 @app.route('/delete', methods=['POST'])
@@ -84,12 +98,12 @@ def change_directory():
 
     # Replace the allowed_directory path with "HOME" in the new current_directory
     censored_directory = current_directory.replace(allowed_directory, "HOME")
-    
+
     return redirect('/')
 
     # Replace the allowed_directory path with "HOME" in the new current_directory
     censored_directory = current_directory.replace(allowed_directory, "HOME")
-    
+
 @app.route('/download/<path:filename>')
 def download_file(filename):
     # Get the file extension
@@ -113,7 +127,7 @@ def download_file(filename):
             content_type = f'image/{file_extension}' if file_extension in ['jpg', 'jpeg', 'png', 'gif'] else 'text/plain'
             response.headers['Content-Type'] = content_type
 
-            # Open the file in a new tab
+           # Open the file in a new tab
             response.headers['Content-Disposition'] = 'inline'
 
             return response
