@@ -1,27 +1,25 @@
 import os
-from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
 try:
     from pathvalidate import sanitize_filename, sanitize_filepath
 except ModuleNotFoundError:
     os.system("pip install pathvalidate")
     try:
-    from pathvalidate import sanitize_filename, sanitize_filepath
-except ModuleNotFoundError:
-    print("pathvalidate installation failed, please run \"pip install pathvalidate\" in terminal")
+        from pathvalidate import sanitize_filename, sanitize_filepath
+    except ModuleNotFoundError:
+        exit("pathvalidate installation failed, please run \"pip install pathvalidate\" in terminal")
 try:
     from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
 except ModuleNotFoundError:
     os.system("pip install flask")
     try:
-    from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
-except ModuleNotFoundError:
-    print("flask installation failed, please run \"pip install flask\" in terminal")
+        from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
+    except ModuleNotFoundError:
+        exit("flask installation failed, please run \"pip install flask\" in terminal")
 app = Flask(__name__)
 allowed_directory = r".\ftp"
-current_directory = allowed_directory
-
 if not os.path.exists(allowed_directory):
     exit(f"Error: Directory \"{allowed_directory}\" does not exist")
+current_directory = allowed_directory
 
 def get_files_and_directories(directory):
     items = os.listdir(directory)
