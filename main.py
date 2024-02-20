@@ -53,8 +53,12 @@ def create_directory():
     directory_name = request.form['directory_name']
     if directory_name:
         sanitized_directory_name = sanitize_filename(directory_name)
+        directory_path = os.path.join(current_directory, sanitized_directory_name)
+        if os.path.exists(directory_path):
+            # Display a client-side JavaScript alert
+            return "<script>alert('Directory already exists, please choose another directory.'); window.location.href='/';</script>"
         try:
-            os.makedirs(os.path.join(current_directory, sanitized_directory_name))
+            os.makedirs(directory_path)
         except Exception as e:
             print(f"Error creating directory: {str(e)}")
             return "Error creating directory."
