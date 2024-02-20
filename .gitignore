@@ -1,2 +1,2 @@
-# Ignore all files and subdirectories in the FTP folder
+/.vscode
 /ftp/*
