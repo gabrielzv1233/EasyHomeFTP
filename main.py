@@ -124,10 +124,11 @@ def download_file(filename):
     file_extension = filename.rsplit('.', 1)[-1].lower()
 
     # Define the allowed file types to open in a new tab
-    allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'txt']
+    #https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+    newtab_types = ['jpg', 'jpeg', 'png', 'gif', 'txt', 'mp3', 'wav', 'mp4', 'avi', 'html', 'm4a', 'webp']
 
     # Check if the file extension is in the allowed types
-    if file_extension in allowed_types:
+    if file_extension in newtab_types:
         # Get the file path
         file_path = os.path.join(current_directory, filename)
 
@@ -138,10 +139,21 @@ def download_file(filename):
 
             # Create a response with appropriate content type
             response = make_response(file_content)
-            content_type = f'image/{file_extension}' if file_extension in ['jpg', 'jpeg', 'png', 'gif'] else 'text/plain'
+            
+            if file_extension in ['jpg', 'jpeg', 'png', 'gif']:
+                content_type = f'image/{file_extension}'
+            elif file_extension in ['mp3', 'wav']:
+                content_type = f'audio/{file_extension}'
+            elif file_extension in ['mp4', 'avi', 'm4a', 'webp']:
+                content_type = f'video/{file_extension}'
+            elif file_extension == 'html':
+                content_type = 'text/html'
+            else:
+                content_type = 'text/plain'
+            
             response.headers['Content-Type'] = content_type
 
-           # Open the file in a new tab
+            # Open the file in a new tab
             response.headers['Content-Disposition'] = 'inline'
 
             return response
