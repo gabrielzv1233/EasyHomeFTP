@@ -84,7 +84,7 @@ def rename_file_or_directory():
             os.rename(os.path.join(current_directory, item_name), os.path.join(current_directory, sanitized_new_name))
         except Exception as e:
             print(f"Error renaming file or directory: {str(e)}")
-            return "Error renaming file or directory."
+            return "<script>alert('Error renaming file or directory:\n{str(e)}'); window.location.href='/';</script>"
     return redirect('/')
 
 @app.route('/delete', methods=['POST'])
