@@ -1,5 +1,2 @@
 # Ignore all files and subdirectories in the FTP folder
 /ftp/*
-
-# Exclude the FTP folder itself
-!/ftp/.gitkeep
