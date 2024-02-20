@@ -1,0 +1,1 @@
+Welcome to EasyHomeFTP (name is WIP), this is a simple program where you can upload files to a folder from a website hosted using python (flask and pathvalidate are needed) you can change the directory of the folder using a varuble located in main.py
