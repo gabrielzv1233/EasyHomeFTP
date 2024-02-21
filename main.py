@@ -1,24 +1,38 @@
 import os
+allowed_directory = r".\ftp" #adding a perioud (.) before the slash of behid a folder name (looks like "./ftp") make the directory relitive to the current directory (ususally the main.py's file dir) (do note remove the "r" before the string, this tells python that the string is a raw string and should not take in count things like \n or \t)
+def clear_console():
+  if os.name == 'nt':  # for Windows
+      os.system("cls")
+  else:  # for Linux and macOS
+      os.system("clear")
+def replace_slash(dir):
+  if os.name == 'nt':  # for Windows
+    return dir.replace(r"/", "\\")
+  else:  # for Linux and macOS
+    return dir.replace("\\", "/")
 try:
     from pathvalidate import sanitize_filename, sanitize_filepath
 except ModuleNotFoundError:
+    print("pathvalidate not installed, installing automatically\n")
     os.system("pip install pathvalidate")
-    try:
-        from pathvalidate import sanitize_filename, sanitize_filepath
-    except ModuleNotFoundError:
-        exit("pathvalidate installation failed, please run \"pip install pathvalidate\" in terminal")
+    clear_console()
 try:
     from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
 except ModuleNotFoundError:
+    print("flask not installed, installing automatically\n")
     os.system("pip install flask")
+    clear_console()
     try:
         from flask import Flask, render_template, request, redirect, send_from_directory, current_app, abort, make_response
     except ModuleNotFoundError:
         exit("flask installation failed, please run \"pip install flask\" in terminal")
+allowed_directory = replace_slash(allowed_directory)
 app = Flask(__name__)
-allowed_directory = r".\ftp"
-if not os.path.exists(allowed_directory):
-    exit(f"Error: Directory \"{allowed_directory}\" does not exist")
+raw_dir = os.path.abspath(allowed_directory)
+if not os.path.exists(raw_dir):
+    exit(f"Error: Directory \"{raw_dir}\" does not exist")
+else:
+  print(f"running at {os.path.abspath(raw_dir)}")
 current_directory = allowed_directory
 
 def get_files_and_directories(directory):
