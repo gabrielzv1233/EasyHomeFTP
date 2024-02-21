@@ -1,5 +1,5 @@
 import os
-allowed_directory = r".\ftp" #adding a perioud (.) before the slash of behid a folder name (looks like "./ftp") make the directory relitive to the current directory (ususally the main.py's file dir) (do note remove the "r" before the string, this tells python that the string is a raw string and should not take in count things like \n or \t)
+allowed_directory = r".\ftp" # Adding a period (.) before the slash behind a folder name (looks like "./ftp") makes the directory relative to the current directory (usually the main.py's file dir) (do note remove the "r" before the string; this tells python that the string is a raw string and should not take into account things like \n or \t)
 def clear_console():
   if os.name == 'nt':  # for Windows
       os.system("cls")
