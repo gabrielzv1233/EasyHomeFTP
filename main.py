@@ -27,7 +27,9 @@ except ModuleNotFoundError:
     except ModuleNotFoundError:
         exit("flask installation failed, please run \"pip install flask\" in terminal")
 allowed_directory = replace_slash(allowed_directory)
+
 app = Flask(__name__)
+
 raw_dir = os.path.abspath(allowed_directory)
 if not os.path.exists(raw_dir):
     exit(f"Error: Directory \"{raw_dir}\" does not exist")
@@ -128,9 +130,6 @@ def change_directory():
     censored_directory = current_directory.replace(allowed_directory, "HOME")
 
     return redirect('/')
-
-    # Replace the allowed_directory path with "HOME" in the new current_directory
-    censored_directory = current_directory.replace(allowed_directory, "HOME")
 
 @app.route('/download/<path:filename>')
 def download_file(filename):
